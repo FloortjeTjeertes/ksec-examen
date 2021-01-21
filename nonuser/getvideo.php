@@ -7,13 +7,26 @@
  */
 
 
+searchDisplay();
+function searchDisplay() {
+	foreach ( getvideos() as $video ) {
 
-function getvideos($){
-	$servername='localhost';
-	$user="root";
-	$database="videoBox";
-	$tabel="video";
-	$pass=null;
+		echo "Titel: ".$video['titel'].'<br>';
+		echo "<video width='400px' height='auto' controls >
+  <source src='./video/".$video['videoPath']."' type='video/mp4'></video> <br>";
+        echo "user:".$video['user']." likes:".$video['likes']."<br>";
+        echo  $video['description'];
+		echo'<br>';
+	}
+
+}
+	function getvideos( $name = null ) {
+	$name       = "%$name%";
+	$servername = 'localhost';
+	$user       = "root";
+	$database   = "videoBox";
+	$tabel      = "video";
+	$pass       = null;
 
 
 	try {
@@ -21,22 +34,58 @@ function getvideos($){
 		$conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 
 
-		$sql="INSERT INTO users (mail, user, pass,type)
-				  VALUES (:mail, :user, :password,'1')";
+		$sql       = 'SELECT video.videoPath,video.titel,video.description,video.likes,users.user FROM `video` 
+			  INNER JOIN users on video.userId = users.id
+';
 		$statement = $conn->prepare( $sql );
 
 
-		$statement->bindParam( ':mail', $Mail, PDO::PARAM_STR );
+		$statement->bindParam( ':des', $name, PDO::PARAM_STR );
 
-		$statement->bindParam( ':user', $userName, PDO::PARAM_STR );
-		$statement->bindParam( ':password', $password, PDO::PARAM_STR );
+		$statement->bindParam( ':titel', $name, PDO::PARAM_STR );
 		$statement->execute();
-		return $statement->fetch();
+
+		return $statement->fetchAll();
 
 
-
-	}
-	catch(PDOException $e) {
+	} catch ( PDOException $e ) {
 		echo "Error: " . $e->getMessage();
 	}
+}
+
+
+
+function like( $add=true ,$id=null) {
+	$servername = 'localhost';
+	$user       = "root";
+	$database   = "videoBox";
+	$tabel      = "video";
+	$pass       = null;
+
+
+	try {
+		$conn = new PDO( "mysql:host=$servername;dbname=$database", $user, $pass );
+		$conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+
+	if($add) {
+	$sql = 'UPDATE video SET likes=likes+1 WHERE id=:id';
 	}
+	else {
+	$sql = 'UPDATE video SET likes=likes-1 WHERE id=:id';
+	}
+
+		$statement = $conn->prepare( $sql );
+
+
+		$statement->bindParam( ':id', $id, PDO::PARAM_STR );
+
+		$statement->execute();
+
+		return $statement->fetchAll();
+
+
+	} catch ( PDOException $e ) {
+		echo "Error: " . $e->getMessage();
+	}
+}
+

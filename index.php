@@ -7,11 +7,11 @@
  */
 
 include "header.php";
-
-
-
-
+?>
+<br>
+<?php
 include "nonuser/getvideo.php";
+
 
 
 ?>
