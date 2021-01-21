@@ -8,7 +8,7 @@ location.href='../index.php';
 </script>
 ";
 
-
 }
 include "../header.php";
 echo "admin";
+

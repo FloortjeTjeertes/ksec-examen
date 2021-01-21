@@ -51,7 +51,7 @@ if(isset($submit)&&$submit=='true'){
 
 			$jsonresult['debug'] = $get;
 			$jsonresult['exist'] = true;
-			$jsonresult['url']   = sesionHandle( $get['type'], $get['user'] );
+			$jsonresult['url']   = sesionHandle( $get['type'], $get['user'],$get['id'] );
 
 
 		}
@@ -109,11 +109,12 @@ function validate($email,$password) {
 }
 
 
-function sesionHandle($userType,$user){
+function sesionHandle($userType,$user,$userid){
 	session_start();
 	$_SESSION["ID"]=session_id();
 	$_SESSION["userName"]=$user;
 	$_SESSION["userType"]=$userType;
+	$_SESSION["userid"]=$userid;
 
 
 	if($userType=='admin'){
@@ -154,7 +155,7 @@ function databaseGet($Mail,$password,$register=false,$userName=null) {
 		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		if($register==false) {
-			$sql = "SELECT users.mail,users.user,users.pass , roles.type FROM users 
+			$sql = "SELECT users.mail,users.user,users.pass,users.id , roles.type FROM users 
 					INNER JOIN roles on users.type = roles.id WHERE mail=:mail AND pass=:password";
 		}
 

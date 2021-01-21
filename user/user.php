@@ -10,3 +10,11 @@ location.href='../index.php';
 }
 include "../header.php";
 echo "user";
+?>
+<br>
+<?php
+include 'upload.php';
+?>
+<br>
+<?php
+include 'editvideos.php';

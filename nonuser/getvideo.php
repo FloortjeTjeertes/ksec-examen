@@ -6,21 +6,37 @@
  * Time: 13:53
  */
 
-
 searchDisplay();
-function searchDisplay() {
-	foreach ( getvideos() as $video ) {
 
+if( isset($_POST['like'])&&isset($_POST['id'])){
+like($_POST['like'],$_POST['id']);
+}
+
+
+function searchDisplay(){
+
+	echo "<script>let videos=[]; </script>";
+	foreach ( getvideos() as $video ) {
 		echo "Titel: ".$video['titel'].'<br>';
 		echo "<video width='400px' height='auto' controls >
-  <source src='./video/".$video['videoPath']."' type='video/mp4'></video> <br>";
-        echo "user:".$video['user']." likes:".$video['likes']."<br>";
+  <source src='./video/".$video['videoPath']."' type='video/mp4'></video> 
+    <source src='./video/".$video['videoPath']."' type='video/ogg'></video> 
+  <source src='./video/".$video['videoPath']."' type='video/webm'></video> 
+
+  
+  <br>";
+        echo "user:".$video['user']." likes:".$video['likes']."<h onclick='like(true,".$video['id'].")'> 👍</h> <br>";
         echo  $video['description'];
+        echo "<script> videos.push(".$video['id'].") </script>";
 		echo'<br>';
 	}
+	echo "<script type='text/javascript' src='nonuser/javascript/videoextra.js'></script>";
 
 }
-	function getvideos( $name = null ) {
+
+
+
+function getvideos( $name = null ) {
 	$name       = "%$name%";
 	$servername = 'localhost';
 	$user       = "root";
@@ -34,7 +50,7 @@ function searchDisplay() {
 		$conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 
 
-		$sql       = 'SELECT video.videoPath,video.titel,video.description,video.likes,users.user FROM `video` 
+		$sql       = 'SELECT video.id, video.videoPath,video.titel,video.description,video.likes,users.user FROM `video` 
 			  INNER JOIN users on video.userId = users.id
 ';
 		$statement = $conn->prepare( $sql );
@@ -55,7 +71,7 @@ function searchDisplay() {
 
 
 
-function like( $add=true ,$id=null) {
+function like( $add ,$id) {
 	$servername = 'localhost';
 	$user       = "root";
 	$database   = "videoBox";
@@ -80,8 +96,6 @@ function like( $add=true ,$id=null) {
 		$statement->bindParam( ':id', $id, PDO::PARAM_STR );
 
 		$statement->execute();
-
-		return $statement->fetchAll();
 
 
 	} catch ( PDOException $e ) {
